@@ -7,13 +7,13 @@ class BaseApiCall(object):
         self.apiKey = apiKey
         self.secret = secret
  
-    def request(self, args):
+    def request(self, args, action):
         args['apiKey'] = self.apiKey
  
         self.params = []
         self._sort_request(args)
         self._create_signature()
-        self._build_post_request()
+        self._build_post_request(action)
  
     def _sort_request(self, args):
         keys = sorted(args.keys())
@@ -30,6 +30,8 @@ class BaseApiCall(object):
  
         self.signature = base64.b64encode(digest)
  
-    def _build_post_request(self):
+    def _build_post_request(self, action):
         self.query += '&signature=' + urllib.quote_plus(self.signature)
-        self.value = self.api_url + '?' + self.query
+        self.value = self.api_url
+        if action == 'GET':
+            self.value += '?' + self.query
